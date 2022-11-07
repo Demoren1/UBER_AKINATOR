@@ -123,6 +123,19 @@ int tree_graph_dump(Node *node, Mode_of_print mode,  const char* name_function, 
     return 0;
 }
 
+int tree_show_graph()
+{
+    char command[256] = {};
+    int cur_num_pic = num_of_pic - 1;
+
+    sprintf(command, "xdg-open graph_dumps/dump_%d.jpeg", cur_num_pic);
+
+    system(command);
+
+    return 0;
+}
+
+
 
 int tree_print_graph(const Node *node)
 {
@@ -148,9 +161,9 @@ int tree_print_graph(const Node *node)
                         
                         "        <tr>\n"
                         
-                        "            <td bgcolor=\"#70de9f\"> Left = %p</td> \n"
+                        "            <td bgcolor=\"#70de9f\" port = \"L%d\"> Left = %p</td> \n"
                         
-                        "            <td bgcolor = \"#c8A2c8\"> Right =  %p </td>\n"
+                        "            <td bgcolor = \"#c8A2c8\" port = \"R%d\"> Right =  %p </td>\n"
                         
                         "        </tr> \n"
                         
@@ -161,18 +174,18 @@ int tree_print_graph(const Node *node)
                         "    </tr>\n" 
                         
                         "</table>>\n"
-                        "]\n\n", num_of_node, node->parent, node->data, node, node->l_son, node->r_son);
+                        "]\n\n", num_of_node, node->parent, node->data, node, num_of_node, node->l_son, num_of_node, node->r_son);
     num_of_node++;   
 
     if(node->l_son)
         {   
-            fprintf(TREE_GRAPH_LOGS, "node%d -> node%d; \n", cur_node, num_of_node);
+            fprintf(TREE_GRAPH_LOGS, "node%d: L%d -> node%d; \n", cur_node, cur_node, num_of_node);
             tree_print_graph(node->l_son);
         }
 
     if (node->r_son)
     {   
-        fprintf(TREE_GRAPH_LOGS, "node%d -> node%d; \n", cur_node, num_of_node);
+        fprintf(TREE_GRAPH_LOGS, "node%d: R%d -> node%d; \n", cur_node, cur_node, num_of_node);
         tree_print_graph(node->r_son);
     }
 

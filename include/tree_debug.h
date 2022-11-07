@@ -52,5 +52,6 @@ int tree_error_decoder(int code);
 enum Tree_Errors
 {
     TREE_ERROR_REWRITE_NODE                     = 1 << 0,
+
 };
 

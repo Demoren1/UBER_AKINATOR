@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <tree_funcs.h>
 #include <tree_debug.h>
 
@@ -16,7 +17,7 @@ Node* node_ctor()
 
     Node *node = (Node*) calloc(1, sizeof(Node));
 
-    node->data = (char *) calloc(256, sizeof(char));
+    // node->data = (char *) calloc(256, sizeof(char));
     return node;
 }
 
@@ -74,7 +75,6 @@ int node_dtor(Node* node)
         node->r_son = NULL;
     }
     
-    free(node->data);
     node->data = NULL;
     free(node);
     node = NULL;
@@ -82,4 +82,22 @@ int node_dtor(Node* node)
     return 0;
 }
 
+int node_dtor_calloc_data(Node *node, const char* buffer, int size)
+{
+    if (node->l_son != NULL)
+    {
+        node_dtor_calloc_data(node->l_son, buffer, size);
+    }
 
+    if (node->r_son != NULL)
+    {
+        node_dtor_calloc_data(node->r_son, buffer, size);
+    }
+
+    if (fabs(buffer - (node->data)) > size)
+    {
+        free(node->data);
+    }
+
+    return 0;
+}

@@ -1,4 +1,4 @@
-
+const int LEN_OF_DATA = 256;
 
 #define FUNC_GENERAL_INFO(object)  __FILE__, __FUNCTION__, #object, __LINE__
 
@@ -35,6 +35,11 @@ Node* node_connect(Node *parent, Node *node, Dest_of_node dest);
 Node* node_ctor_connect(Node *parent, Dest_of_node dest);
 
 int node_dtor(Node *node);
+
+int node_dtor_calloc_data(Node *node, const char* buffer, int size);
+
+int tree_show_graph();
+
 
 
 
