@@ -5,6 +5,16 @@ typedef struct Buffer_t
     int curr_index;
 } Buffer;
 
+#define SAY_AND_WRITE(str)  {                                                           \
+                            printf("%s \n", str);                                       \
+                            char command[512] = {};                                     \
+                            }
+                            // sprintf(command, "festival -b \'(SayText \"%s\") \'", str); \
+                            // system(command);                                            \
+                            }   
+
+#define TEST_ON_ADD_NODE(index, pedigree) (((pedigree)[index])->pos == LEFT) ? " " : "not"
+
 int akinator_handle_base(const char* path_to_file, Buffer *buff);
 
 int akinator_size_for_buffer(FILE *file_with_buff, const char *path_to_file);
@@ -26,6 +36,10 @@ int reset_stdin();
 int akinator_define(Node *node);
 
 Node* find_node(Node *node, const char *str);
+
+int akinator_compare(Node *node);
+
+int compare_pedigrees(Node *pedigree1[], Node *pedegree2[]);
 
 enum Regimes
 {

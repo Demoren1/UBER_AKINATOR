@@ -1,6 +1,7 @@
 all : mkdir akinator
 SRC_AKINATOR_DIR = ./src/akinator/
 OBJ_DIR = ./obj/
+DUMP_DIR = ./graph_dumps/
 CC = g++
 
 # RELEASE_FLAGS := -DNDEBUG
@@ -39,4 +40,4 @@ mkdir :
 	@mkdir $(OBJ_DIR) -p
 
 clean:
-	rm $(OBJ_DIR)*.o $(OBJ_DIR)*.ii $(OBJ_DIR)*.s *.save akinator
+	rm $(OBJ_DIR)*.o $(OBJ_DIR)*.ii $(OBJ_DIR)*.s $(DUMP_DIR)*.jpeg *.save akinator

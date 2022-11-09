@@ -5,7 +5,7 @@
 #include <tree_debug.h>
 
 int tree_ctor(Tree *tree)
-{
+{   
     tree->root = node_ctor();
 
     return 0;
@@ -21,36 +21,39 @@ Node* node_ctor()
     return node;
 }
 
-Node *node_ctor_connect(Node *parent, Dest_of_node dest)
+Node *node_ctor_connect(Node *parent, Pos_of_node pos)
 {
     Node *node = node_ctor();
 
-    node_connect(parent, node, dest);
+    node_connect(parent, node, pos);
 
     return node;
 }
 
-Node* node_connect(Node *parent, Node *node, Dest_of_node dest)
+Node* node_connect(Node *parent, Node *node, Pos_of_node pos)
 {
     //todo checker on rewrite of parent node
 
-    switch (dest)       
+    switch (pos)       
     {
     case LEFT:
     {   
         
         parent->l_son = node;
+        node->pos = LEFT;
         
         break;
     }
     case RIGHT:
     {
         parent->r_son = node;
+        node->pos = RIGHT;
+
         break;
     }
 
     default:
-        printf("You make a mistake in input of dest\n");
+        printf("You make a mistake in input of pos\n");
         break;
     }
     

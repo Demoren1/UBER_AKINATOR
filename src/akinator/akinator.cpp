@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <tree_funcs.h>
 #include <tree_debug.h>
 #include <akinator_funcs.h>
@@ -21,12 +22,12 @@ int main(int argv, char *argc[])
 
     while (choice != 5)
     {   
-        printf("Choose, what do you want\n");
-        printf("--------------------------------------------------------\n");
-        printf("1.Guess                    2.Give definition            \n");
-        printf("3.Compare                  4.Graph dump                 \n");
-        printf("5.Quit                                                  \n");
-        printf("--------------------------------------------------------\n");
+        SAY_AND_WRITE("Choose, what do you want");
+        SAY_AND_WRITE("--------------------------------------------------------");
+        SAY_AND_WRITE("1.Guess                    2.Give definition            ");
+        SAY_AND_WRITE("3.Compare                  4.Graph dump                 ");
+        SAY_AND_WRITE("5.Quit                                                  ");
+        SAY_AND_WRITE("--------------------------------------------------------");
         scanf(" %d", &choice);
 
         switch(choice)
@@ -44,6 +45,8 @@ int main(int argv, char *argc[])
             }
             case COMPARE:
             {
+                reset_stdin();
+                akinator_compare(tree.root);
                 break;
             }
             case GRAPH_DUMP:
@@ -54,12 +57,12 @@ int main(int argv, char *argc[])
             }
             case QUIT:
             {
-                puts("Bye");
+                SAY_AND_WRITE("Bye");
                 break;
             }
             default:
             {
-                puts("Can you read?");
+                SAY_AND_WRITE("Can you read?");
                 reset_stdin();
                 break;
             }
