@@ -17,7 +17,6 @@ Node* node_ctor()
 
     Node *node = (Node*) calloc(1, sizeof(Node));
 
-    // node->data = (char *) calloc(256, sizeof(char));
     return node;
 }
 
@@ -36,25 +35,25 @@ Node* node_connect(Node *parent, Node *node, Pos_of_node pos)
 
     switch (pos)       
     {
-    case LEFT:
-    {   
-        
-        parent->l_son = node;
-        node->pos = LEFT;
-        
-        break;
-    }
-    case RIGHT:
-    {
-        parent->r_son = node;
-        node->pos = RIGHT;
+        case LEFT:
+        {   
+            
+            parent->l_son = node;
+            node->pos = LEFT;
+            
+            break;
+        }
+        case RIGHT:
+        {
+            parent->r_son = node;
+            node->pos = RIGHT;
 
-        break;
-    }
+            break;
+        }
 
-    default:
-        printf("You make a mistake in input of pos\n");
-        break;
+        default:
+            printf("You make a mistake in input of pos\n");
+            break;
     }
     
     node->parent = parent;
@@ -92,7 +91,7 @@ int node_dtor_calloc_data(Node *node, const char* buffer, int size)
         node_dtor_calloc_data(node->l_son, buffer, size);
     }
 
-    if (node->r_son != NULL)
+    if (node->r_son != NULL)                                        //todo 1 traverse on tree
     {
         node_dtor_calloc_data(node->r_son, buffer, size);
     }

@@ -84,7 +84,7 @@ int akinator_do_tree(Node *node, Buffer *buff)
     
     if (strchr(buff->buffer + buff->curr_index, '}'))
     {
-        buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;  
+        buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;        //todo remove from if and else
         return 0;
     }
 
@@ -151,7 +151,7 @@ int link_nodes(Node *node, Buffer *buff)
 
 int akinator_dtor(Buffer *buffer)
 {   
-
+    //todo verificator
     free(buffer->buffer);
     fclose(BASE);
     
@@ -242,7 +242,7 @@ int akinator_add_node(Node *node)
     strchr(difference, '\n')[0] = '\0';
 
     
-    Node *l_node = node_ctor_connect(node, LEFT);
+    Node *l_node = node_ctor_connect(node, LEFT);           //todo func with add data
     Node *r_node = node_ctor_connect(node, RIGHT);
     
     l_node->data = new_obj;
@@ -367,7 +367,7 @@ int print_def(Node *node)
 
     if ((node->parent) && (node->parent->l_son == node))
     {
-        SAY_AND_WRITE(node->parent->data);
+        SAY_AND_WRITE(node->parent->data);          //todo make it func and flag to speak
     }
 
     else if ((node->parent) && (node->parent->r_son == node))
@@ -459,7 +459,7 @@ int compare_pedigrees(Node *pedigree1[], Node *pedigree2[])
             
             if (pedigree1[index+1]->pos == LEFT)
             {
-                
+                        //todo add define                               //todo rename
                 sprintf(tmp_str, "But first are %s%s", TEST_ON_ADD_NODE(index+1, pedigree1), pedigree1[index]->data);
                 
                 SAY_AND_WRITE(tmp_str);
