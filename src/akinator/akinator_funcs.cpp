@@ -8,6 +8,8 @@
 #include <tree_debug.h>
 #include <akinator_funcs.h>
 
+static int VOICE = 0;
+
 static int del_new_line_sym(Buffer *buffer);
 
 static int print_def(Node *node);
@@ -15,6 +17,10 @@ static int print_def(Node *node);
 static int get_str(char *str);
 
 static int write_pedigree(Node **pedigree, Node *node, int depth);
+
+static int update_base(Node *node);
+
+static int akinator_print_indent(int indent);
 
 static FILE *BASE = 0;
 
@@ -164,13 +170,13 @@ int akinator_guess(Node *node)
     
     Node *tmp_node = node;
 
-    SAY_AND_WRITE("If you agree input \'y\', else input \'n\'");
+    say_and_write("If you agree input \'y\', else input \'n\'");
 
     while(tmp_node->l_son != NULL)
     {   
         char str [512] = {};
         sprintf(str, "%s?\n", tmp_node->data);
-        SAY_AND_WRITE(str);
+        say_and_write(str);
 
         scanf(" %c", &choice);
 
@@ -188,7 +194,7 @@ int akinator_guess(Node *node)
             }
             default:
             {
-                SAY_AND_WRITE("Why you so stupid?");
+                say_and_write("Why you so stupid?");
                 reset_stdin();
             }
         }
@@ -196,7 +202,7 @@ int akinator_guess(Node *node)
 
     char str [512] = {};
     sprintf(str,"Is it %s?", tmp_node->data);
-    SAY_AND_WRITE(str);
+    say_and_write(str);
 
     scanf(" %c", &choice);
     
@@ -204,7 +210,7 @@ int akinator_guess(Node *node)
         {
             case 'y':
             {
-                SAY_AND_WRITE("Its so obvious");
+                say_and_write("Its so obvious");
                 break;
             }
             case 'n':
@@ -214,7 +220,7 @@ int akinator_guess(Node *node)
             }
             default:
             {
-                SAY_AND_WRITE("Why you so stupid?");
+                say_and_write("Why you so stupid?");
                 reset_stdin();
             }
         }
@@ -230,13 +236,13 @@ int akinator_add_node(Node *node)
     char *new_obj = (char*) calloc(LEN_OF_DATA, sizeof(char));
     char *difference = (char*) calloc(LEN_OF_DATA, sizeof(char)); 
 
-    SAY_AND_WRITE("Ok, what it was?\n");
+    say_and_write("Ok, what it was?\n");
     fgets(new_obj, LEN_OF_DATA, stdin);
     strchr(new_obj, '\n')[0] = '\0';
 
     char str[512] = {};
     sprintf(str, "What difference between %s and %s?\n", new_obj, node->data);
-    SAY_AND_WRITE(str);
+    say_and_write(str);
 
     fgets(difference, LEN_OF_DATA, stdin);
     strchr(difference, '\n')[0] = '\0';
@@ -261,42 +267,60 @@ int reset_stdin()
     return 0;
 }
 
+static int num_of_indent = 0;
 int akinator_update_base(Node *node)
 {   
-    if (!node)
-    {
-        return 0;
-    }
-
     if(node->parent == NULL)
     {
         fseek(BASE, 0, SEEK_SET);   
     }
 
+    num_of_indent = 0;
+    update_base(node);
+
+    return 0;
+}
+
+int update_base(Node *node)
+{
+    if (!node)
+    {
+        return 0;
+    }
+
     fprintf(BASE, "{ #%s", node->data);
-    // fprintf(stdout, "{ #%s", node->data);
+    // fprintf(stdout, "{ #%s\n", node->data);
 
     
     if(node->l_son)
         {   
+            num_of_indent++;
+            // printf("num of ind = %d\n", num_of_indent);
+            akinator_print_indent(num_of_indent);
             fprintf(BASE, "\n");
-            akinator_update_base(node->l_son);
+            update_base(node->l_son);
         }
 
     else    
-    {
+    {   
+        num_of_indent--;
+        akinator_print_indent(num_of_indent);
         fprintf(BASE, "}");
         return 0;
     }
 
     if(node->r_son)
-        {   
-            fprintf(BASE, "\n");
-            akinator_update_base(node->r_son);
-        }
+    {   
+        num_of_indent++;
+        akinator_print_indent(num_of_indent);
+        fprintf(BASE, "\n");
+        update_base(node->r_son);
+    }
 
     else    
     {
+        num_of_indent--;
+        akinator_print_indent(num_of_indent);
         fprintf(BASE, "}");
         return 0;
     }
@@ -308,7 +332,7 @@ int akinator_update_base(Node *node)
 
 int akinator_define(Node *node)
 {
-    SAY_AND_WRITE("What do you want to define?");
+    say_and_write("What do you want to define?");
 
     char str[LEN_OF_DATA] = {};
     fgets(str, LEN_OF_DATA, stdin);
@@ -323,7 +347,7 @@ int akinator_define(Node *node)
 
     else    
     {
-        SAY_AND_WRITE("We dont have this object");
+        say_and_write("We dont have this object");
     }
 
     return 0;
@@ -335,10 +359,6 @@ Node *find_node(Node *node, const char *str)
         return 0;
 
     Node *tmp_node = 0;
-
-    // printf("node->date = %s!\n", node->data);
-    // printf("str = %s!\n", str);
-    // printf("result of comparison = %d\n", strcmp(node->data, str));
 
     if (strcmp(node->data, str) == 0)
     {   
@@ -367,14 +387,14 @@ int print_def(Node *node)
 
     if ((node->parent) && (node->parent->l_son == node))
     {
-        SAY_AND_WRITE(node->parent->data);          //todo make it func and flag to speak
+        say_and_write(node->parent->data);          //todo make it func and flag to speak
     }
 
     else if ((node->parent) && (node->parent->r_son == node))
     {   
         char str[LEN_OF_DATA] = {};
         sprintf(str, "not %s", node->parent->data);
-        SAY_AND_WRITE(str);
+        say_and_write(str);
     }
 
     return 0;
@@ -390,10 +410,10 @@ int akinator_compare(Node *node)
     Node *node2 = {};
     Node *pedigree2[128] = {};
 
-    SAY_AND_WRITE("Input first object for comparison:");
+    say_and_write("Input first object for comparison:");
     get_str(obj_1);
 
-    SAY_AND_WRITE("Input second object:");
+    say_and_write("Input second object:");
     get_str(obj_2);
 
     node1 = find_node(node, obj_1);
@@ -401,16 +421,12 @@ int akinator_compare(Node *node)
 
     if (!(node1 && node2))
     {
-        SAY_AND_WRITE("You input wrong obj");
+        say_and_write("You input wrong obj");
         return 0;
     }
 
     int depth1 = write_pedigree(pedigree1, node1, 0);
     pedigree1[depth1] = node1;
-
-    // for (int i = 0; i <= depth1; i++)
-    //     printf("pedigree1 = %s\n", pedigree1[i]->data); 
-
 
     int depth2 = write_pedigree(pedigree2, node2, 0);
     pedigree2[depth2] = node2;
@@ -423,53 +439,50 @@ int akinator_compare(Node *node)
 int write_pedigree(Node *pedigree[], Node *node, int depth)
 {
     if (!node)
-    {
-        // DBG;   
+    {   
         return 0;
     }
     
     if(node->parent) 
     {   
-        // DBG;
         depth = write_pedigree(pedigree, node->parent, depth);
         pedigree[depth] = node->parent;
-        // printf("%d -- %s\n", depth, pedigree[depth]->data);
         depth++;
     }
 
     return depth;
 }
 
+static char TMP_STR[512] = {};
 int compare_pedigrees(Node *pedigree1[], Node *pedigree2[])
 {
     int index = 0;
-    char tmp_str[512] ={};
+    
     while((pedigree1[index+1] != NULL) && (pedigree2[index+1] != NULL) && (pedigree1[index] == pedigree2[index]))
     {   
         
         if (pedigree1[index+1] == pedigree2[index + 1])
         {
             
-            sprintf(tmp_str, "They both are %s", pedigree1[index]->data);
+            sprintf(TMP_STR, "They both are %s %s", TEST_ON_ADD_NOT(index+1, pedigree1), pedigree1[index]->data);
             
-            SAY_AND_WRITE(tmp_str);
+            say_and_write(TMP_STR);
         }
         else
         {   
             
             if (pedigree1[index+1]->pos == LEFT)
-            {
-                        //todo add define                               //todo rename
-                sprintf(tmp_str, "But first are %s%s", TEST_ON_ADD_NODE(index+1, pedigree1), pedigree1[index]->data);
+            {         
+                sprintf(TMP_STR, "But first are %s%s", TEST_ON_ADD_NOT(index+1, pedigree1), pedigree1[index]->data);
                 
-                SAY_AND_WRITE(tmp_str);
+                say_and_write(TMP_STR);
             }
             else
             {   
                 
-                sprintf(tmp_str, "But second are %s %s", TEST_ON_ADD_NODE(index+1, pedigree2), pedigree2[index]->data);
+                sprintf(TMP_STR, "But second are %s %s", TEST_ON_ADD_NOT(index+1, pedigree2), pedigree2[index]->data);
                 
-                SAY_AND_WRITE(tmp_str);
+                say_and_write(TMP_STR);
             }
         }
         index++;
@@ -482,8 +495,8 @@ int compare_pedigrees(Node *pedigree1[], Node *pedigree2[])
     {
         while(pedigree1[index1 + 1] != NULL)
         {
-            sprintf(tmp_str, "first also are %s %s", TEST_ON_ADD_NODE(index1+1, pedigree1), pedigree1[index1]->data);
-            SAY_AND_WRITE(tmp_str);
+            sprintf(TMP_STR, "first also are %s %s", TEST_ON_ADD_NOT(index1+1, pedigree1), pedigree1[index1]->data);
+            say_and_write(TMP_STR);
             index1++;
         }
     }
@@ -492,8 +505,8 @@ int compare_pedigrees(Node *pedigree1[], Node *pedigree2[])
     {
         while(pedigree2[index2+1] != NULL)
         {   
-            sprintf(tmp_str, "second also are %s %s", TEST_ON_ADD_NODE(index2+1, pedigree2), pedigree2[index2]->data);
-            SAY_AND_WRITE(tmp_str);
+            sprintf(TMP_STR, "second also are %s %s", TEST_ON_ADD_NOT(index2+1, pedigree2), pedigree2[index2]->data);
+            say_and_write(TMP_STR);
             index2++;
         }
     }
@@ -507,5 +520,43 @@ int get_str(char *str)
     fgets(str, LEN_OF_DATA, stdin);
     strchr(str, '\n')[0] = '\0';
 
+    return 0;
+}
+
+int say_and_write(const char *str)  
+{                                                           
+    printf("%s \n", str);                                       
+    char command[512] = {};
+    if(VOICE == 1)
+    {
+        sprintf(command, "festival -b \'(SayText \"%s\") \'", str); 
+        system(command);                                            
+    }
+
+    return 0;
+}   
+
+int akinator_voice()
+{
+    puts("Do you need voice? (1 -- yes, 0 -- no)");
+
+    scanf("%d", &VOICE);
+
+    reset_stdin();
+
+    return 0;
+}
+
+int akinator_print_indent(int indent)
+{   
+    printf("ind in func = %d\n", indent);
+    int i = 0;
+    for (; i++; i <= 10)
+    {       
+        puts("hahaha");
+    }
+
+    printf(" i = %d\n", i);
+    DBG;
     return 0;
 }

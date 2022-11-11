@@ -15,20 +15,23 @@ int main(int argv, char *argc[])
     const char *file_path = "test_base.txt"; //todo use argc
     Buffer buff ={};
 
+    akinator_voice();
     akinator_handle_base(file_path, &buff);
     akinator_do_tree(tree.root, &buff);    
 
     int choice = 0;
 
     while (choice != 5)
-    {   
-        SAY_AND_WRITE("Choose, what do you want");
-        SAY_AND_WRITE("--------------------------------------------------------");
-        SAY_AND_WRITE("1.Guess                    2.Give definition            ");
-        SAY_AND_WRITE("3.Compare                  4.Graph dump                 ");
-        SAY_AND_WRITE("5.Quit                                                  ");
-        SAY_AND_WRITE("--------------------------------------------------------");
+    {      
+        //todo in 1 func
+        say_and_write("\nChoose, what do you want");
+        say_and_write("--------------------------------------------------------");
+        say_and_write("1.Guess                    2.Give definition            ");
+        say_and_write("3.Compare                  4.Graph dump                 ");
+        say_and_write("5.Quit                                                  ");
+        say_and_write("--------------------------------------------------------");
         scanf(" %d", &choice);
+        //todo reset in end of while 
 
         switch(choice)
         {
@@ -57,12 +60,12 @@ int main(int argv, char *argc[])
             }
             case QUIT:
             {
-                SAY_AND_WRITE("Bye");
+                say_and_write("Bye");
                 break;
             }
             default:
             {
-                SAY_AND_WRITE("Can you read?");
+                say_and_write("Can you read?");
                 reset_stdin();
                 break;
             }
