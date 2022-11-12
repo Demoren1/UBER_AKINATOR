@@ -1,3 +1,6 @@
+#ifndef TREE_GUARD
+#define TREE_GUARD
+
 const int LEN_OF_DATA = 256;
 
 #define FUNC_GENERAL_INFO(object)  __FILE__, __FUNCTION__, #object, __LINE__
@@ -40,7 +43,7 @@ int node_dtor(Node *node);
 int node_dtor_calloc_data(Node *node, const char* buffer, int size);
 
 int tree_show_graph();
-
+#endif
 
 
 

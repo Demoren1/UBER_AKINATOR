@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <tree_funcs.h>
 #include <tree_debug.h>
 
@@ -43,8 +44,10 @@ int close_tree_logs()
 
 int tree_dump(Node *node, Mode_of_print mode,  const char* name_function, const char* name_file, const char* name_variable, int num_line)
 {
-    fprintf(TREE_LOGS, "Dump called from %s file, in %s func, in %d line, name of variable = %s\n\n", name_file, name_function, num_line, name_variable);    
-    fprintf(HTM_LOGS, "Dump called from %s file, in %s func, in %d line, name of variable = %s\n\n", name_file, name_function, num_line, name_variable);
+    fprintf(TREE_LOGS,  "Dump called from %s file, in %s func, in %d line, name of variable = %s\n\n",
+                         name_file, name_function, num_line, name_variable);    
+    fprintf(HTM_LOGS,   "Dump called from %s file, in %s func, in %d line, name of variable = %s\n\n",
+                        name_file, name_function, num_line, name_variable);
 
     tree_print(node, mode);
 

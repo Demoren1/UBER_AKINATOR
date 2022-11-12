@@ -1,3 +1,6 @@
+#ifndef AKINATOR_GUARD
+#define AKINATOR_GUARD
+
 typedef struct Buffer_t
 {
     char *buffer;
@@ -5,7 +8,7 @@ typedef struct Buffer_t
     int curr_index;
 } Buffer;
 
-#define TEST_ON_ADD_NOT(index, pedigree) (((pedigree)[index])->pos == LEFT) ? " " : "not"
+#define TEST_ON_NOT(index, pedigree) (((pedigree)[index])->pos == LEFT) ? " " : " not "
 
 int say_and_write(const char *str);   
 
@@ -45,3 +48,4 @@ enum Regimes
     GRAPH_DUMP  = 4,
     QUIT        = 5
 };
+#endif

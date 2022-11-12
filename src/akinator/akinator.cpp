@@ -23,16 +23,16 @@ int main(int argv, char *argc[])
 
     while (choice != 5)
     {      
-        //todo in 1 func
-        say_and_write("\nChoose, what do you want");
-        say_and_write("--------------------------------------------------------");
-        say_and_write("1.Guess                    2.Give definition            ");
-        say_and_write("3.Compare                  4.Graph dump                 ");
-        say_and_write("5.Quit                                                  ");
-        say_and_write("--------------------------------------------------------");
-        scanf(" %d", &choice);
-        //todo reset in end of while 
 
+        say_and_write(  "\nChoose, what do you want\n"                                  \
+                        "--------------------------------------------------------\n"    \
+                        "1.Guess                    2.Give definition            \n"    \
+                        "3.Compare                  4.Graph dump                 \n"    \
+                        "5.Quit                                                  \n"    \
+                        "--------------------------------------------------------\n");
+        scanf("%d", &choice);
+        reset_stdin();
+        
         switch(choice)
         {
             case GUESS:
@@ -42,13 +42,11 @@ int main(int argv, char *argc[])
             }
             case GIVE_DEF:
             {   
-                reset_stdin();
                 akinator_define(tree.root);
                 break;
             }
             case COMPARE:
             {
-                reset_stdin();
                 akinator_compare(tree.root);
                 break;
             }
@@ -66,11 +64,9 @@ int main(int argv, char *argc[])
             default:
             {
                 say_and_write("Can you read?");
-                reset_stdin();
                 break;
             }
         }       
-
         akinator_update_base(tree.root);
     }
 

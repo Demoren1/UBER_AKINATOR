@@ -38,6 +38,7 @@ $(OBJ_DIR)%.o : $(SRC_AKINATOR_DIR)%.cpp
 
 mkdir :
 	@mkdir $(OBJ_DIR) -p
+	@mkdir $(DUMP_DIR) -p
 
 clean:
 	rm $(OBJ_DIR)*.o $(OBJ_DIR)*.ii $(OBJ_DIR)*.s $(DUMP_DIR)*.jpeg *.save akinator

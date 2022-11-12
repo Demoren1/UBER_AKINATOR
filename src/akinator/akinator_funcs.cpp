@@ -25,7 +25,10 @@ static int akinator_print_indent(int indent);
 static FILE *BASE = 0;
 
 int akinator_handle_base(const char* path_to_file, Buffer *buff)
-{
+{   
+    SOFT_ASS(path_to_file == NULL);
+    SOFT_ASS(buff == NULL);
+    
     BASE = fopen(path_to_file, "rw+");
 
     if(NULL == BASE)                  //todo akinator verificator
@@ -54,6 +57,8 @@ int akinator_handle_base(const char* path_to_file, Buffer *buff)
 
 static int del_new_line_sym(Buffer* buff)
 {
+    SOFT_ASS(buff == NULL);
+
     for (int i = 0; i < buff->size; i++)
     {
         if (buff->buffer[i] == '\n')
@@ -67,6 +72,10 @@ static int del_new_line_sym(Buffer* buff)
 
 int akinator_size_for_buffer(FILE *BASE, const char *path_to_file)
 {
+    SOFT_ASS(BASE == NULL);
+    SOFT_ASS(path_to_file == NULL);
+
+
     struct stat buf ={};
     stat(path_to_file, &buf);
 
@@ -76,27 +85,25 @@ int akinator_size_for_buffer(FILE *BASE, const char *path_to_file)
 
 int akinator_do_tree(Node *node, Buffer *buff)
 {   
+    SOFT_ASS(node == NULL);
+    SOFT_ASS(buff == NULL);
+
     char new_str[LEN_OF_DATA] = {};
+    char *cur_pos = buff->buffer + buff->curr_index;
      
-    if (buff->curr_index >= buff->size - 1)
+    if (buff->curr_index >= buff->size)
     {
         return 0;
     }
 
-    if (strchr(buff->buffer + buff->curr_index, '{'))
-        {   
-            node->data = strchr(buff->buffer + buff->curr_index, '#') + 1;
-        }
-    
-    if (strchr(buff->buffer + buff->curr_index, '}'))
-    {
-        buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;        //todo remove from if and else
-        return 0;
-    }
-
-    else
+    if (strchr(cur_pos, '{'))
     {   
-        buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;  
+        node->data = strchr(cur_pos, '#') + 1;
+    }
+
+    buff->curr_index += strlen(cur_pos) + 1;
+    if (!strchr(cur_pos, '}'))
+    {   
         link_nodes(node, buff);
     }
     return 0;
@@ -104,46 +111,52 @@ int akinator_do_tree(Node *node, Buffer *buff)
 
 int link_nodes(Node *node, Buffer *buff)
 {
+    SOFT_ASS(node == NULL);
+    SOFT_ASS(buff == NULL);
+
     char new_str[LEN_OF_DATA] = {};
 
-    if (buff->curr_index >= buff->size - 1)
+    if (buff->curr_index >= buff->size)
     {
         return 0;
     }
     
-    if (strchr(buff->buffer + buff->curr_index, '{'))
+    //todo: use this variable instead 
+    char *cur_pos = buff->buffer + buff->curr_index;
+    
+    if (strchr(cur_pos, '{'))
         {   
             Node *l_node = node_ctor_connect(node, LEFT);
 
-            if (strchr(buff->buffer + buff->curr_index, '}'))
+            if (strchr(cur_pos, '}'))
             {   
-                strchr(buff->buffer + buff->curr_index, '}')[0] = '\0';
-                l_node->data = strchr(buff->buffer + buff->curr_index, '#') + 1;
+                strchr(cur_pos, '}')[0] = '\0';
+                l_node->data = strchr(cur_pos, '#') + 1;
                 
                 buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;
                 buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;
             }
-
             else
             {   
                 akinator_do_tree(l_node, buff);
             }
-
+            
+            cur_pos = buff->buffer + buff->curr_index;
             Node *r_node = node_ctor_connect(node, RIGHT);
-            if (strchr(buff->buffer + buff->curr_index, '}'))
+            if (strchr(cur_pos, '}'))
             {   
-                strchr(buff->buffer + buff->curr_index, '}')[0] = '\0';
+                strchr(cur_pos, '}')[0] = '\0';
 
-                r_node->data = strchr(buff->buffer + buff->curr_index, '#') + 1;
+                r_node->data = strchr(cur_pos, '#') + 1;
 
                 buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;
                 buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;
                 
-                while ((buff->curr_index <= buff->size -1) && (strchr(buff->buffer + buff->curr_index, '{') == NULL))
+                while ((buff->curr_index <= buff->size - 1) && (strchr(buff->buffer + buff->curr_index, '{') == NULL))  
                 {   
-                    buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;
+                    buff->curr_index += strlen(cur_pos) + 1;
                 }
-                
+
             }
             else
             {
@@ -157,17 +170,26 @@ int link_nodes(Node *node, Buffer *buff)
 
 int akinator_dtor(Buffer *buffer)
 {   
-    //todo verificator
-    free(buffer->buffer);
-    fclose(BASE);
+    if (BASE != NULL)
+    {
+        fclose(BASE);
+        BASE = NULL;
+    }
+
+    if (buffer->buffer != NULL)
+    {
+        free(buffer->buffer);
+        buffer->buffer = NULL;
+    }
     
     return 0;
 }
 
 int akinator_guess(Node *node)
 {
-    char choice = ' ';
+    SOFT_ASS(node == NULL);
     
+    char choice = ' ';
     Node *tmp_node = node;
 
     say_and_write("If you agree input \'y\', else input \'n\'");
@@ -175,7 +197,7 @@ int akinator_guess(Node *node)
     while(tmp_node->l_son != NULL)
     {   
         char str [512] = {};
-        sprintf(str, "%s?\n", tmp_node->data);
+        sprintf(str, "\n%s?", tmp_node->data);
         say_and_write(str);
 
         scanf(" %c", &choice);
@@ -225,17 +247,20 @@ int akinator_guess(Node *node)
             }
         }
 
-    // fprintf(BASE, "tralala\n");
     return 0;
 }
 
 int akinator_add_node(Node *node)
 {   
+    SOFT_ASS(node == NULL);
     reset_stdin();
 
     char *new_obj = (char*) calloc(LEN_OF_DATA, sizeof(char));
-    char *difference = (char*) calloc(LEN_OF_DATA, sizeof(char)); 
+    char *difference = (char*) calloc(LEN_OF_DATA, sizeof(char));
 
+    SOFT_ASS(new_obj == NULL);
+    SOFT_ASS(difference == NULL);
+    
     say_and_write("Ok, what it was?\n");
     fgets(new_obj, LEN_OF_DATA, stdin);
     strchr(new_obj, '\n')[0] = '\0';
@@ -267,71 +292,69 @@ int reset_stdin()
     return 0;
 }
 
-static int num_of_indent = 0;
 int akinator_update_base(Node *node)
 {   
+    SOFT_ASS(node == NULL);
+
     if(node->parent == NULL)
     {
         fseek(BASE, 0, SEEK_SET);   
     }
 
-    num_of_indent = 0;
     update_base(node);
 
     return 0;
 }
 
 int update_base(Node *node)
-{
+{   
+    
     if (!node)
     {
         return 0;
     }
-
+    
+    SOFT_ASS(node == NULL)
+    SOFT_ASS(node->data == NULL);
     fprintf(BASE, "{ #%s", node->data);
-    // fprintf(stdout, "{ #%s\n", node->data);
-
+    
     
     if(node->l_son)
-        {   
-            num_of_indent++;
-            // printf("num of ind = %d\n", num_of_indent);
-            akinator_print_indent(num_of_indent);
-            fprintf(BASE, "\n");
-            update_base(node->l_son);
-        }
+    {   
+        
 
+        fprintf(BASE, "\n");
+        update_base(node->l_son);
+    }
     else    
     {   
-        num_of_indent--;
-        akinator_print_indent(num_of_indent);
         fprintf(BASE, "}");
         return 0;
     }
 
     if(node->r_son)
     {   
-        num_of_indent++;
-        akinator_print_indent(num_of_indent);
+        
         fprintf(BASE, "\n");
         update_base(node->r_son);
     }
-
     else    
     {
-        num_of_indent--;
-        akinator_print_indent(num_of_indent);
         fprintf(BASE, "}");
         return 0;
     }
     
     fprintf(BASE,"\n}");
+    
+
 
     return 0;
 }
 
 int akinator_define(Node *node)
-{
+{   
+    SOFT_ASS(node == NULL);
+
     say_and_write("What do you want to define?");
 
     char str[LEN_OF_DATA] = {};
@@ -344,7 +367,6 @@ int akinator_define(Node *node)
     {
         print_def(proper_node);
     }
-
     else    
     {
         say_and_write("We dont have this object");
@@ -355,6 +377,9 @@ int akinator_define(Node *node)
 
 Node *find_node(Node *node, const char *str)
 {   
+    SOFT_ASS_NO_RET(node == NULL);
+    SOFT_ASS_NO_RET(str == NULL);
+
     if (!node)
         return 0;
 
@@ -380,6 +405,8 @@ Node *find_node(Node *node, const char *str)
 
 int print_def(Node *node)
 {
+    SOFT_ASS(node == NULL);
+
     if (node->parent)
     {
         print_def(node->parent);
@@ -402,6 +429,8 @@ int print_def(Node *node)
 
 int akinator_compare(Node *node)
 {   
+    SOFT_ASS(node == NULL);
+
     char obj_1[LEN_OF_DATA] = {};
     char obj_2[LEN_OF_DATA] = {};
     Node *node1 = {};
@@ -437,7 +466,9 @@ int akinator_compare(Node *node)
 }
 
 int write_pedigree(Node *pedigree[], Node *node, int depth)
-{
+{   
+    SOFT_ASS(pedigree == NULL);
+
     if (!node)
     {   
         return 0;
@@ -453,19 +484,19 @@ int write_pedigree(Node *pedigree[], Node *node, int depth)
     return depth;
 }
 
-static char TMP_STR[512] = {};
 int compare_pedigrees(Node *pedigree1[], Node *pedigree2[])
 {
+    SOFT_ASS(pedigree1 == NULL);
+    SOFT_ASS(pedigree2 == NULL);
+
     int index = 0;
-    
+    char TMP_STR[512] = {};
+
     while((pedigree1[index+1] != NULL) && (pedigree2[index+1] != NULL) && (pedigree1[index] == pedigree2[index]))
     {   
-        
         if (pedigree1[index+1] == pedigree2[index + 1])
-        {
-            
-            sprintf(TMP_STR, "They both are %s %s", TEST_ON_ADD_NOT(index+1, pedigree1), pedigree1[index]->data);
-            
+        {    
+            sprintf(TMP_STR, "They both are%s%s", TEST_ON_NOT(index+1, pedigree1), pedigree1[index]->data);   
             say_and_write(TMP_STR);
         }
         else
@@ -473,15 +504,12 @@ int compare_pedigrees(Node *pedigree1[], Node *pedigree2[])
             
             if (pedigree1[index+1]->pos == LEFT)
             {         
-                sprintf(TMP_STR, "But first are %s%s", TEST_ON_ADD_NOT(index+1, pedigree1), pedigree1[index]->data);
-                
+                sprintf(TMP_STR, "But first are%s%s", TEST_ON_NOT(index+1, pedigree1), pedigree1[index]->data);
                 say_and_write(TMP_STR);
             }
             else
             {   
-                
-                sprintf(TMP_STR, "But second are %s %s", TEST_ON_ADD_NOT(index+1, pedigree2), pedigree2[index]->data);
-                
+                sprintf(TMP_STR, "But second are%s%s", TEST_ON_NOT(index+1, pedigree2), pedigree2[index]->data);
                 say_and_write(TMP_STR);
             }
         }
@@ -495,7 +523,7 @@ int compare_pedigrees(Node *pedigree1[], Node *pedigree2[])
     {
         while(pedigree1[index1 + 1] != NULL)
         {
-            sprintf(TMP_STR, "first also are %s %s", TEST_ON_ADD_NOT(index1+1, pedigree1), pedigree1[index1]->data);
+            sprintf(TMP_STR, "first also are%s%s", TEST_ON_NOT(index1+1, pedigree1), pedigree1[index1]->data);
             say_and_write(TMP_STR);
             index1++;
         }
@@ -505,7 +533,7 @@ int compare_pedigrees(Node *pedigree1[], Node *pedigree2[])
     {
         while(pedigree2[index2+1] != NULL)
         {   
-            sprintf(TMP_STR, "second also are %s %s", TEST_ON_ADD_NOT(index2+1, pedigree2), pedigree2[index2]->data);
+            sprintf(TMP_STR, "second also are%s%s", TEST_ON_NOT(index2+1, pedigree2), pedigree2[index2]->data);
             say_and_write(TMP_STR);
             index2++;
         }
@@ -547,16 +575,3 @@ int akinator_voice()
     return 0;
 }
 
-int akinator_print_indent(int indent)
-{   
-    printf("ind in func = %d\n", indent);
-    int i = 0;
-    for (; i++; i <= 10)
-    {       
-        puts("hahaha");
-    }
-
-    printf(" i = %d\n", i);
-    DBG;
-    return 0;
-}

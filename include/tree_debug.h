@@ -1,7 +1,10 @@
-#define TREE_CHECK_ON_ERROR(condition, code) if(condition)                                                           \
-                                        {                                                                       \
-                                            tree_error_decoder(code);                                                \
-                                            tree_dump(tree, INORDER, FUNC_GENERAL_INFO());                               \
+#ifndef DEBUG_GUARD
+#define DEBUG_GUARD
+
+#define TREE_CHECK_ON_ERROR(condition, code) if(condition)                                  \
+                                        {                                                   \
+                                            tree_error_decoder(code);                       \
+                                            tree_dump(tree, INORDER, FUNC_GENERAL_INFO());  \
                                         }
 
 
@@ -11,6 +14,21 @@
                                                         fprintf(TREE_GRAPH_LOGS, "%s\n", #code_of_error); \
                                                     }                                                           \
                                                     else  0;
+#define DEBUG_ON 1
+#if DEBUG_ON == 1
+#define SOFT_ASS(condition) if (condition)                                                                                   \
+                            {                                                                                               \
+                                printf("something go wrong at %s file, %s func, %s obj, %d line\n", FUNC_GENERAL_INFO());   \
+                                return -1;                                                                                  \
+                            }      
+#define SOFT_ASS_NO_RET(condition) if (condition)                                                                                   \
+                            {                                                                                               \
+                                printf("something go wrong at %s file, %s func, %s obj, %d line\n", FUNC_GENERAL_INFO());   \
+                            }                                                  
+#else
+#define SOFT_ASS(condition) 
+#define SOFT_ASS_NO_RET(condition) 
+#endif
 
 #define FUNC_GENERAL_INFO(object)  __FILE__, __FUNCTION__, #object, __LINE__
 
@@ -54,4 +72,4 @@ enum Tree_Errors
     TREE_ERROR_REWRITE_NODE                     = 1 << 0,
 
 };
-
+#endif
