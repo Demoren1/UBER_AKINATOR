@@ -6,23 +6,34 @@
 
 int tree_ctor(Tree *tree)
 {   
-    tree->root = node_ctor();
+    tree->root = node_ctor(0);
 
     return 0;
 }
 
-Node* node_ctor()
+Node* node_ctor(bool flag_on_data)
 {
-    //todo add check for calloc
-
     Node *node = (Node*) calloc(1, sizeof(Node));
+    SOFT_ASS_NO_RET(node == NULL);
+
+    if (flag_on_data)
+    {
+        node->data = (char*) calloc(LEN_OF_DATA + 1, sizeof(char));
+        SOFT_ASS_NO_RET(node->data == NULL);
+
+        puts("Input data");
+        fgets(node->data, LEN_OF_DATA, stdin);
+    }
 
     return node;
 }
 
 Node *node_ctor_connect(Node *parent, Pos_of_node pos)
-{
-    Node *node = node_ctor();
+{   
+    SOFT_ASS_NO_RET(parent == NULL);
+
+    Node *node = node_ctor(0);
+    SOFT_ASS_NO_RET(node == NULL);
 
     node_connect(parent, node, pos);
 
@@ -31,13 +42,14 @@ Node *node_ctor_connect(Node *parent, Pos_of_node pos)
 
 Node* node_connect(Node *parent, Node *node, Pos_of_node pos)
 {
-    //todo checker on rewrite of parent node
+    SOFT_ASS_NO_RET(parent == NULL);
+    SOFT_ASS_NO_RET(node == NULL);
 
     switch (pos)       
     {
         case LEFT:
         {   
-            
+            SOFT_ASS_NO_RET(parent->l_son != NULL)
             parent->l_son = node;
             node->pos = LEFT;
             
@@ -45,6 +57,7 @@ Node* node_connect(Node *parent, Node *node, Pos_of_node pos)
         }
         case RIGHT:
         {
+            SOFT_ASS_NO_RET(parent->r_son != NULL)
             parent->r_son = node;
             node->pos = RIGHT;
 
@@ -63,7 +76,7 @@ Node* node_connect(Node *parent, Node *node, Pos_of_node pos)
 
 int node_dtor(Node* node)
 {
-    //todo maybe poison the data
+    SOFT_ASS(node == NULL);
 
     if (node->l_son != NULL)
     {

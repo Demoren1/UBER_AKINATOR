@@ -20,8 +20,6 @@ static int write_pedigree(Node **pedigree, Node *node, int depth);
 
 static int update_base(Node *node);
 
-static int akinator_print_indent(int indent);
-
 static FILE *BASE = 0;
 
 int akinator_handle_base(const char* path_to_file, Buffer *buff)
@@ -31,20 +29,16 @@ int akinator_handle_base(const char* path_to_file, Buffer *buff)
     
     BASE = fopen(path_to_file, "rw+");
 
-    if(NULL == BASE)                  //todo akinator verificator
-    {
-        printf("cant open buffer file");
-        return -1;
-    }
+    SOFT_ASS(BASE == NULL);
 
     buff->size = akinator_size_for_buffer(BASE, path_to_file);
 
-    buff->buffer = (char*) calloc(buff->size, sizeof(char));        //todo verify
-    assert(buff->buffer != NULL);
+    buff->buffer = (char*) calloc(buff->size, sizeof(char));        
+    SOFT_ASS(buff->buffer == NULL);
 
     int test_fread = 0;
-    test_fread = fread(buff->buffer, sizeof(char), buff->size, BASE);      //todo verify
-    assert(test_fread != 0);  
+    test_fread = fread(buff->buffer, sizeof(char), buff->size, BASE);      
+    SOFT_ASS(test_fread == 0);  
 
     del_new_line_sym(buff);
 
@@ -121,7 +115,6 @@ int link_nodes(Node *node, Buffer *buff)
         return 0;
     }
     
-    //todo: use this variable instead 
     char *cur_pos = buff->buffer + buff->curr_index;
     
     if (strchr(cur_pos, '{'))
@@ -154,7 +147,7 @@ int link_nodes(Node *node, Buffer *buff)
                 
                 while ((buff->curr_index <= buff->size - 1) && (strchr(buff->buffer + buff->curr_index, '{') == NULL))  
                 {   
-                    buff->curr_index += strlen(cur_pos) + 1;
+                    buff->curr_index += strlen(buff->buffer + buff->curr_index) + 1;
                 }
 
             }
@@ -175,13 +168,12 @@ int akinator_dtor(Buffer *buffer)
         fclose(BASE);
         BASE = NULL;
     }
-
     if (buffer->buffer != NULL)
     {
         free(buffer->buffer);
         buffer->buffer = NULL;
-    }
-    
+    }  
+
     return 0;
 }
 
@@ -253,6 +245,7 @@ int akinator_guess(Node *node)
 int akinator_add_node(Node *node)
 {   
     SOFT_ASS(node == NULL);
+    SOFT_ASS(node->data == NULL);
     reset_stdin();
 
     char *new_obj = (char*) calloc(LEN_OF_DATA, sizeof(char));

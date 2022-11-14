@@ -12,7 +12,7 @@ int main(int argv, char *argc[])
     Tree tree = {};
     tree_ctor(&tree);
     
-    const char *file_path = "test_base.txt"; //todo use argc
+    const char *file_path = (argc[1] == NULL) ? "test_base.txt" : argc[1];
     Buffer buff ={};
 
     akinator_voice();

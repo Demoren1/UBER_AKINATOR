@@ -17,10 +17,10 @@ typedef enum
 
 typedef struct Node_t
 {
-    char *data;
-    Node_t* parent;
-    Node_t* l_son;
-    Node_t* r_son;
+    char *data      = NULL;
+    Node_t* parent  = NULL;
+    Node_t* l_son   = NULL;
+    Node_t* r_son   = NULL;
     Pos_of_node pos;
 
 } Node;
@@ -32,7 +32,7 @@ typedef struct Tree_t
 
 int tree_ctor(Tree *tree);
 
-[[nodiscard]]Node *node_ctor();
+Node *node_ctor(bool flag_on_data);
 
 Node* node_connect(Node *parent, Node *node, Pos_of_node pos);
 
