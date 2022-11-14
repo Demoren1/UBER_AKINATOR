@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdarg.h>
 #include <tree_funcs.h>
 #include <tree_debug.h>
 
@@ -199,6 +200,22 @@ int tree_error_decoder(int code)
 {
     TREE_PRINT_ERROR(code, TREE_ERROR_REWRITE_NODE);
 
+
+    return 0;
+}
+
+int print_in_logs(const char *str,...)
+{   
+    if (TREE_LOGS != NULL && str != NULL)
+    {
+        va_list args;
+        
+        va_start(args, str);
+        vfprintf(TREE_LOGS, str, args);
+        va_end(args);
+        
+        fflush(TREE_LOGS);
+    }
 
     return 0;
 }

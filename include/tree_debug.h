@@ -16,14 +16,15 @@
                                                     else  0;
 #define DEBUG_ON 1
 #if DEBUG_ON == 1
-#define SOFT_ASS(condition) if (condition)                                                                                   \
-                            {                                                                                               \
-                                printf("something go wrong at %s file, %s func, %s obj, %d line\n", FUNC_GENERAL_INFO());   \
-                                return -1;                                                                                  \
+#define SOFT_ASS(condition) if (condition)                                                                                      \
+                            {                                                                                                   \
+                                printf("something go wrong at %s file, %s func, %s obj, %d line\n", FUNC_GENERAL_INFO());       \
+                                print_in_logs("\nsomething go wrong at %s file, %s func, %s obj, %d line", FUNC_GENERAL_INFO());\
+                                return -1;                                                                                      \
                             }      
 #define SOFT_ASS_NO_RET(condition) if (condition)                                                                                   \
-                            {                                                                                               \
-                                printf("something go wrong at %s file, %s func, %s obj, %d line\n", FUNC_GENERAL_INFO());   \
+                            {                                                                                                       \
+                                printf("something go wrong at %s file, %s func, %s obj, %d line\n", FUNC_GENERAL_INFO());           \
                             }                                                  
 #else
 #define SOFT_ASS(condition) 
@@ -67,9 +68,12 @@ int tree_graph_dump(Node *node, Mode_of_print mode,  const char* name_function, 
 
 int tree_error_decoder(int code);
 
+int print_in_logs(const char *str,...);
+
 enum Tree_Errors
 {
     TREE_ERROR_REWRITE_NODE                     = 1 << 0,
 
 };
+
 #endif

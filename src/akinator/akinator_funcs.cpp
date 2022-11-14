@@ -43,7 +43,6 @@ int akinator_handle_base(const char* path_to_file, Buffer *buff)
     del_new_line_sym(buff);
 
     buff->buffer[buff->size] = '\0';
-
     buff->curr_index = 0;
 
     return 0;
@@ -248,8 +247,8 @@ int akinator_add_node(Node *node)
     SOFT_ASS(node->data == NULL);
     reset_stdin();
 
-    char *new_obj = (char*) calloc(LEN_OF_DATA, sizeof(char));
-    char *difference = (char*) calloc(LEN_OF_DATA, sizeof(char));
+    char *new_obj = (char*) calloc(LEN_OF_DATA + 1, sizeof(char));
+    char *difference = (char*) calloc(LEN_OF_DATA + 1, sizeof(char));
 
     SOFT_ASS(new_obj == NULL);
     SOFT_ASS(difference == NULL);
@@ -355,6 +354,7 @@ int akinator_define(Node *node)
     strchr(str, '\n')[0] = '\0';
 
     Node *proper_node = find_node(node, str);
+    SOFT_ASS(proper_node == NULL);
 
     if (proper_node)
     {
